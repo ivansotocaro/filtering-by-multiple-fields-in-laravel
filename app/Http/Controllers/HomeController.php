@@ -31,20 +31,12 @@ class HomeController extends Controller
 
     public function searchUser(Request $request)
     {
+        $users = User::query()
+            ->when($request->id, fn($q) => $q->where('id', 'LIKE', $request->id.'%'))
+            ->when($request->name, fn($q) => $q->where('name', 'LIKE', $request->name.'%'))
+            ->when($request->email, fn($q) => $q->where('email', 'LIKE', $request->email.'%'))
+            ->get();
 
-        $query = User::query();
-
-        if($request->id) {
-            $query->where('id', 'LIKE', $request->id.'%');
-        }
-        if($request->name) {
-            $query->where('name', 'LIKE', $request->name.'%');
-        }
-        if($request->email) {
-            $query->where('email', 'LIKE', $request->email.'%');
-        }
-        $users = $query->get();
         return view('home', compact('users'));
-
     }
 }
